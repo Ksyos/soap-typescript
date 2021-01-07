@@ -5,6 +5,7 @@ export {ISoapOptions} from './lib/interfaces/ISoapOptions';
 
 export {SoapClient} from './lib/annotations/SoapClient';
 export {SoapOperation} from './lib/annotations/SoapOperation';
+export {SimpleSoapOperation} from './lib/annotations/SimpleSoapOperation';
 export {SoapService} from './lib/annotations/SoapService';
 
 export {soap} from './lib/express-middleware'
