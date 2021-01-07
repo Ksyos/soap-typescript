@@ -6,4 +6,4 @@ This fork adds a decorator for none-complex type based xml element in the respon
 `npm install @ksyos/soap-typescript`
 
 ## Original repo
-https://github.com/RobinBuschmann
+https://github.com/RobinBuschmann/soap-typescript
