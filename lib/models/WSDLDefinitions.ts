@@ -87,21 +87,36 @@ export class WSDLDefinitions {
     });
   }
 
-  static processOperation(target: string, key: string, requestDataType: any, responseDataType: any): void {
+  static processOperation(target: string, key: string, requestDataType: any, responseDataType: any, responseName?: string): void {
 
     const definitions = this.getOrCreateIfNotExists(target);
+    const requestMessage = this.createWSDLRequestPart(key, definitions, requestDataType);
+    
+    var responseMessage: WSDLMessage;
+    if(!responseName){
+      responseMessage = this.createWSDLResponsePartComplexType(definitions, responseDataType);
+    } else {
+      responseMessage = this.createWSDLResponsePartSimpleType(definitions, responseDataType, responseName);
+    }
 
+    this.createWSDLPortTypePart(key, definitions, requestMessage, responseMessage);
+    this.createWSDLBindingPart(key, definitions, requestMessage, responseMessage);
+  }
+
+  static createWSDLRequestPart(key: string, definitions: WSDLDefinitions, requestDataType: any, ){
     const requestComplexType = XSDComplexTypeModel.getXSDComplexType(requestDataType.prototype);
     if (!requestComplexType) throw new Error(`"${requestDataType.name}" is not a complex type`);
     const requestElement = XSDElementModel.createElement({name: key}, requestComplexType, requestDataType);
     definitions.schema.addElement(requestElement);
-    const requestPartName = key;
     const requestMessage = new WSDLMessage({
       name: key + MESSAGE_SUFFIX,
-      part: {name: requestPartName, element: requestElement.nsName}
+      part: {name: key, element: requestElement.nsName}
     });
     definitions.addMessage(requestMessage);
+    return requestMessage;
+  }
 
+  static createWSDLResponsePartComplexType(definitions: WSDLDefinitions, responseDataType: any){
     const responseComplexType = XSDComplexTypeModel.getXSDComplexType(responseDataType.prototype);
     if (!responseComplexType) throw new Error(`"${responseDataType.name}" is not a complex type`);
     const responseElement = XSDElementModel.createElement({name: responseComplexType.name}, responseComplexType, responseDataType);
@@ -112,20 +127,36 @@ export class WSDLDefinitions {
       part: {name: responsePartName, element: responseElement.nsName}
     });
     definitions.addMessage(responseMessage);
+    return responseMessage;
+  }
 
+  static createWSDLResponsePartSimpleType(definitions: WSDLDefinitions, responseDataType: string, responseName: string){
+    const responseElement = XSDElementModel.createElement({name: responseName, type: responseDataType})
+    definitions.schema.addElement(responseElement);
+    const responseMessage = new WSDLMessage({
+      name: responseName + MESSAGE_SUFFIX,
+      part: {name: responseName, element: responseElement.nsName}
+    });
+    definitions.addMessage(responseMessage);
+    return responseMessage;
+  }
+
+  static createWSDLPortTypePart(key: string, definitions: WSDLDefinitions, requestMessage: WSDLMessage, responseMessage: WSDLMessage){
     definitions.portType.addOperation(new WSDLOperation({
       name: key,
       input: {message: requestMessage.nsName},
       output: {message: responseMessage.nsName}
     }));
+  }
 
+  static createWSDLBindingPart(key: string, definitions: WSDLDefinitions, requestMessage: WSDLMessage, responseMessage: WSDLMessage){
     definitions.binding.addOperation(new WSDLOperation({
       name: key,
       soapOperation: true,
-      input: {body: {parts: requestPartName}},
-      output: {body: {parts: responsePartName}}
+      input: {body: {parts: requestMessage.part.name}},
+      output: {body: {parts: responseMessage.part.name}}
     }));
-  }
+  } 
 
   static getWSDLDefinitions(target: any): WSDLDefinitions|undefined {
 

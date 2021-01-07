@@ -3,7 +3,13 @@ import {WSDLDefinitions} from "../models/WSDLDefinitions";
 export function SoapOperation(responseDataType: any): any {
 
   return (target: any, key: string, descriptor: TypedPropertyDescriptor<Function>) => {
-    const requestDataType = Reflect.getMetadata('design:paramtypes', target, key)[0];
+    const requestDataType = getRequestDataType(target,key, descriptor);
+    WSDLDefinitions.processOperation(target, key, requestDataType, responseDataType);
+  };
+}
+
+export function getRequestDataType(target: any, key: string, descriptor: TypedPropertyDescriptor<Function> ){
+  const requestDataType = Reflect.getMetadata('design:paramtypes', target, key)[0];
     const operation = descriptor.value as Function;
 
     if (!requestDataType) {
@@ -22,6 +28,5 @@ export function SoapOperation(responseDataType: any): any {
         .catch(err => res(err))
         ;
     };
-    WSDLDefinitions.processOperation(target, key, requestDataType, responseDataType);
-  };
+    return requestDataType;
 }
