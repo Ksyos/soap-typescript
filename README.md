@@ -1,12 +1,15 @@
-[![Build Status](https://travis-ci.org/RobinBuschmann/soap-typescript.png?branch=master)](https://travis-ci.org/RobinBuschmann/soap-typescript)
+# Why the fork?
+This fork adds a decorator for none-complex type based xml element in the response.
+
+
+## Installation
+`npm install @ksyos/soap-typescript`
+
+## Original repo
+https://github.com/matthew-andrews/isomorphic-fetch
 
 # soap-decorators
 SOAP decorators for creating wsdl's and annotating services to provide metadata for [node-soap](https://github.com/vpulim/node-soap).
-
-## Installation
-```
-npm install soap-decorators --save
-```
 
 ## Usage
 
