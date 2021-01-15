@@ -91,7 +91,7 @@ export class WSDLDefinitions {
 
     const definitions = this.getOrCreateIfNotExists(target);
     const requestMessage = this.createWSDLRequestPart(key, definitions, requestDataType);
-    
+
     var responseMessage: WSDLMessage;
     if(!responseName){
       responseMessage = this.createWSDLResponsePartComplexType(definitions, responseDataType);
@@ -103,7 +103,7 @@ export class WSDLDefinitions {
     this.createWSDLBindingPart(key, definitions, requestMessage, responseMessage);
   }
 
-  static createWSDLRequestPart(key: string, definitions: WSDLDefinitions, requestDataType: any, ){
+  static createWSDLRequestPart(key: string, definitions: WSDLDefinitions, requestDataType: any){
     const requestComplexType = XSDComplexTypeModel.getXSDComplexType(requestDataType.prototype);
     if (!requestComplexType) throw new Error(`"${requestDataType.name}" is not a complex type`);
     const requestElement = XSDElementModel.createElement({name: key}, requestComplexType, requestDataType);
@@ -130,12 +130,12 @@ export class WSDLDefinitions {
     return responseMessage;
   }
 
-  static createWSDLResponsePartSimpleType(definitions: WSDLDefinitions, responseDataType: string, responseName: string){
+  static createWSDLResponsePartSimpleType(definitions: WSDLDefinitions, responseDataType: string, responseName: string) {
     const responseElement = XSDElementModel.createElement({name: responseName, type: responseDataType})
     definitions.schema.addElement(responseElement);
     const responseMessage = new WSDLMessage({
       name: responseName + MESSAGE_SUFFIX,
-      part: {name: responseName, element: responseElement.nsName}
+      part: {name: responseName, element: responseElement.name}
     });
     definitions.addMessage(responseMessage);
     return responseMessage;
