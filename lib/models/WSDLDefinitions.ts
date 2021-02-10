@@ -135,7 +135,7 @@ export class WSDLDefinitions {
     definitions.schema.addElement(responseElement);
     const responseMessage = new WSDLMessage({
       name: responseName + MESSAGE_SUFFIX,
-      part: {name: responseName, element: responseElement.name}
+      part: {name: responseName, element: responseElement.nsName}
     });
     definitions.addMessage(responseMessage);
     return responseMessage;
